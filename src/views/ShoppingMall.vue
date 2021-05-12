@@ -1,4 +1,4 @@
-<template v-lazy="banner.imageUrl">
+<template>
   <div class="home">
     <!--search bar layout-->
     <div class="search-bar">
@@ -18,18 +18,58 @@
     <div class="swiper-area">
       <van-swipe :autoplay="1000">
         <van-swipe-item v-for="(banner, index) in bannerPicArray" :key="index">
-          <img :src="banner.imageUrl" width="100%" />
+          <img :src="banner.image" v-lazy="banner.image" width="100%" />
         </van-swipe-item>
       </van-swipe>
     </div>
+    <!-- type-bar -->
+    <div class="type-bar">
+      <div v-for="(cate, index) in category" :key="index">
+        <img :src="cate.image" v-lazy="cate.image" width="90%" />
+        <span>{{ cate.mallCategoryName }}</span>
+      </div>
+    </div>
+    <!--AD banner area-->
+    <div class="ad-banner">
+      <img
+        :src="adBanner.PICTURE_ADDRESS"
+        v-lazy="adBanner.PICTURE_ADDRESS"
+        width="100%"
+      />
+    </div>
+    <!--Recommend goods area-->
+    <div class="recommend-area">
+      <div class="recommend-title">商品推荐</div>
+      <div class="recommend-body"></div>
+    </div>
+    <!--swiper-->
+    <swiper :options="swiperOption">
+      <swiper-slide v-for="(item, index) in recommendGoods" :key="index">
+        <div class="recommend-item">
+          <img :src="item.image" width="80%" />
+          <div>{{ item.goodsName }}</div>
+          <div>￥{{ item.price }} (￥{{ item.mallPrice }})</div>
+        </div>
+      </swiper-slide>
+    </swiper>
     <div>{{ msg }}</div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+import { Swiper, SwiperSlide, directive } from "vue-awesome-swiper";
+import "swiper/swiper-bundle.css";
+
 export default {
   name: "ShoppingMall",
-  components: {},
+  components: {
+    Swiper,
+    SwiperSlide,
+  },
+  directives: {
+    swiper: directive,
+  },
   data() {
     return {
       msg: "Shopping Mall",
@@ -48,7 +88,31 @@ export default {
             "https://aocoin-cdn.oss-cn-beijing.aliyuncs.com/assets/aolinkio/h5/static/img/ksm-banner.7104f.png",
         },
       ],
+      category: [],
+      adBanner: {
+        PICTURE_ADDRESS: null,
+      },
+      recommendGoods: [],
     };
+  },
+  created() {
+    axios({
+      url:
+        "https://www.fastmock.site/mock/7ca1d4602a3b1864289829825b58d041/shop/api/smilevue",
+      method: "get",
+    })
+      .then((response) => {
+        console.log(response);
+        if (response.status == 200) {
+          this.category = response.data.data.category;
+          this.adBanner = response.data.data.advertesPicture;
+          this.bannerPicArray = response.data.data.slides;
+          this.recommendGoods = response.data.data.recommend;
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
 };
 </script>
@@ -77,5 +141,44 @@ export default {
   width: 20rem;
   clear: both;
   overflow: hidden;
+}
+.type-bar {
+  background-color: #fff;
+  margin: 0 0.3rem 0.3rem 0.3rem;
+  border-radius: 0.3rem;
+  font-size: 14px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.type-bar div {
+  padding: 0.3rem;
+  font-size: 12px;
+  text-align: center;
+}
+.ad-banner {
+  img {
+    display: block;
+    width: 100%;
+  }
+}
+.recommend-area {
+  background-color: #fff;
+  margin-top: 0.3rem;
+}
+.recommend-title {
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  padding: 0.2rem;
+  color: #e5017d;
+}
+.recommend-body {
+  border-bottom: 1px solid #eee;
+}
+.recommend-item {
+  width: 99%;
+  border-right: 1px solid #eee;
+  font-size: 12px;
+  text-align: center;
 }
 </style>
