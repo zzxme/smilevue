@@ -52,28 +52,10 @@
         </div>
       </swiper-slide>
     </swiper>
-    <div>{{ msg }}</div>
     <!--floor one area-->
-    <div class="floor">
-      <div class="floor-anomaly">
-        <div class="floor-one">
-          <img :src="floor1_0.image" width="100%" />
-        </div>
-        <div>
-          <div class="floor-two">
-            <img :src="floor1_1.image" width="100%" />
-          </div>
-          <div>
-            <img :src="floor1_2.image" width="100%" />
-          </div>
-        </div>
-      </div>
-      <div class="floor-rule">
-        <div v-for="(item, index) in floor1.slice(3)" :key="index">
-          <img :src="item.image" width="100%" />
-        </div>
-      </div>
-    </div>
+    <Floor :floorData="floor1" :floorTitle="floorName.floor1"></Floor>
+    <Floor :floorData="floor2" :floorTitle="floorName.floor2"></Floor>
+    <Floor :floorData="floor3" :floorTitle="floorName.floor3"></Floor>
   </div>
 </template>
 
@@ -81,12 +63,14 @@
 import axios from "axios";
 import { Swiper, SwiperSlide, directive } from "vue-awesome-swiper";
 import "swiper/swiper-bundle.css";
+import Floor from "@/components/component/Floor.vue";
 
 export default {
   name: "ShoppingMall",
   components: {
     Swiper,
     SwiperSlide,
+    Floor,
   },
   directives: {
     swiper: directive,
@@ -114,10 +98,10 @@ export default {
         PICTURE_ADDRESS: null,
       },
       recommendGoods: [],
+      floorName: null,
       floor1: [],
-      floor1_0: { image: "" },
-      floor1_1: { image: "" },
-      floor1_2: { image: "" },
+      floor2: [],
+      floor3: [],
     };
   },
   created() {
@@ -133,10 +117,10 @@ export default {
           this.adBanner = response.data.data.advertesPicture;
           this.bannerPicArray = response.data.data.slides;
           this.recommendGoods = response.data.data.recommend;
+          this.floorName = response.data.data.floorName;
           this.floor1 = response.data.data.floor1; //楼层1数据
-          this.floor1_0 = this.floor1[0];
-          this.floor1_1 = this.floor1[1];
-          this.floor1_2 = this.floor1[2];
+          this.floor2 = response.data.data.floor2; //楼层2数据
+          this.floor3 = response.data.data.floor3; //楼层3数据
         }
       })
       .catch((error) => {
